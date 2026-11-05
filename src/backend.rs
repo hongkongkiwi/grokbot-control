@@ -527,7 +527,14 @@ impl XaiBackend {
     pub fn new(credential: Credential, base_url: Option<String>) -> Result<Self> {
         let raw = base_url
             .or_else(|| std::env::var("XAI_BASE_URL").ok().filter(|s| !s.is_empty()))
-            .unwrap_or_else(|| "https://api.x.ai/v1".to_string());
+            .unwrap_or_else(|| match &credential {
+                // xAI OAuth (subscription) tokens are served by the Grok
+                // CLI proxy; API keys use the developer API. xAI also
+                // accepts OAuth bearers on api.x.ai for some accounts —
+                // set XAI_BASE_URL=https://api.x.ai/v1 to try that path.
+                Credential::OAuth(_) => "https://cli-chat-proxy.grok.com/v1".to_string(),
+                Credential::ApiKey(_) => "https://api.x.ai/v1".to_string(),
+            });
         let base_url = validate_base_url(&raw)?;
         let client = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(120))

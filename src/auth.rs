@@ -155,7 +155,23 @@ pub fn default_issuer() -> String {
     std::env::var("GROK_OAUTH_ISSUER")
         .ok()
         .filter(|s| !s.is_empty())
-        .unwrap_or_else(|| "https://accounts.x.ai".to_string())
+        .unwrap_or_else(|| "https://auth.x.ai".to_string())
+}
+
+/// OAuth scope for the login. xAI's native flow uses `grok-cli:access`;
+/// other issuers fall back to standard OIDC scopes. Override with
+/// GROK_OAUTH_SCOPE.
+pub fn oauth_scope(issuer: &str) -> String {
+    if let Ok(s) = std::env::var("GROK_OAUTH_SCOPE") {
+        if !s.is_empty() {
+            return s;
+        }
+    }
+    if issuer.contains("x.ai") {
+        "grok-cli:access".to_string()
+    } else {
+        "openid profile offline_access".to_string()
+    }
 }
 pub fn default_client_id() -> String {
     std::env::var("GROK_OAUTH_CLIENT_ID")
@@ -314,7 +330,7 @@ pub async fn login_browser(issuer: &str, client_id: &str, open_browser: bool) ->
         "{auth_url_base}?response_type=code&client_id={}&redirect_uri={}&scope={}&state={}&code_challenge={}&code_challenge_method=S256",
         urlencoding(client_id),
         urlencoding(&redirect_uri),
-        urlencoding("openid profile offline_access"),
+        urlencoding(&oauth_scope(issuer)),
         state,
         challenge
     );

@@ -190,17 +190,24 @@ grokbot-control logout
 ```
 
 Endpoints come from the issuer's discovery document
-(`GROK_OAUTH_ISSUER`, default `https://accounts.x.ai`; override endpoints
+(`GROK_OAUTH_ISSUER`, default `https://auth.x.ai` — xAI's native OAuth, where the user signs in with X on xAI's page; scope `grok-cli:access` via `GROK_OAUTH_SCOPE`; override endpoints
 with `GROK_OAUTH_AUTHORIZE_URL` / `GROK_OAUTH_TOKEN_URL` / `GROK_OAUTH_DEVICE_URL`,
 client id with `GROK_OAUTH_CLIENT_ID`). Tokens land in
 `~/.config/grokbot-control/auth.json` (`0600`, dir `0700`) — never in bot
 state, never printed, auto-refreshed when a refresh token exists.
 
 Credential precedence: `--credential oauth|api_key` (or `GROKBOT_CREDENTIAL`)
-wins; otherwise OAuth login, then `XAI_API_KEY`, then mock. One honest
-caveat: **api.x.ai officially documents API keys.** If xAI rejects an OAuth
-token, calls fail with a 401 message that says exactly that and points at
-the fix — run `grokbot-control run bot_test_connection` to check a login.
+wins; otherwise OAuth login, then `XAI_API_KEY`, then mock. With an OAuth
+credential, chat defaults to the Grok CLI proxy
+(`cli-chat-proxy.grok.com/v1`, subscription-backed); set
+`XAI_BASE_URL=https://api.x.ai/v1` to try the developer API with the same
+token. Honest caveats: **api.x.ai officially documents API keys**, and xAI
+runs an allowlist on the OAuth API surface — some subscribed accounts get
+403 there even after a successful login. Either way you get an explicit
+401/403 message saying so, never a silent failure — run
+`grokbot-control run bot_test_connection` to check a login. (Plain
+"Sign in with X" developer OAuth is deliberately not used: it authorizes
+the X API at `api.x.com`, not Grok.)
 
 ### 2. OAuth for MCP clients (server login)
 

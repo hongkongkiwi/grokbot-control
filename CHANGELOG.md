@@ -2,6 +2,11 @@
 
 ## Unreleased — grokbot-control rename + OAuth + audit fixes
 
+- Login retargeted to xAI's native OAuth (`auth.x.ai`, scope
+  `grok-cli:access`); OAuth credentials route to the Grok CLI proxy by
+  default. "Sign in with X" developer OAuth intentionally not used —
+  it authorizes api.x.com (X API), not Grok.
+
 - **Renamed** `grokbot-control-mcp` → `grokbot-control` (crate, binary,
   MCP server name). Legacy state at
   `~/.local/share/grokbot-control-mcp/state.json` is copied to the new
