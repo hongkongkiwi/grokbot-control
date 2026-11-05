@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "grokbot": {
+      "command": "/absolute/path/to/grokbot-control/target/release/grokbot-control",
+      "args": ["--state-file", "/absolute/path/to/grokbot-state.json"],
+      "env": {
+        "XAI_API_KEY": "xai-YOUR_KEY_HERE"
+      }
+    }
+  }
+}

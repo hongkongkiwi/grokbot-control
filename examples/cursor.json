@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "grokbot": {
+      "command": "/absolute/path/to/grokbot-control/target/release/grokbot-control",
+      "args": ["--backend", "mock"],
+      "env": {}
+    }
+  }
+}

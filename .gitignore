@@ -1,0 +1,4 @@
+/target
+grokbot-state.json
+*.json.tmp
+.DS_Store
